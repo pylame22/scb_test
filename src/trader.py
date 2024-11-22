@@ -88,6 +88,8 @@ class TraderSubset(BaseTrader):
         lots_map: dict[tuple[int, ...], tuple[int, int]] = {(): (0, 0)}
         for idx, lot in enumerate(self._lots):
             lot_profit, lot_cost = self._calculate_profit(lot)
+            if lot_profit <= 0 or lot_cost > self._total_funds:
+                continue
             new_lots_map = lots_map.copy()
             for used_lots, (profit, cost) in lots_map.items():
                 new_profit = profit + lot_profit
@@ -113,6 +115,8 @@ class TraderDP(BaseTrader):
         lot_choices: list[list[int]] = [[] for _ in range(self._total_funds + 1)]
         for idx, lot in enumerate(self._lots):
             lot_profit, lot_cost = self._calculate_profit(lot)
+            if lot_profit <= 0 or lot_cost > self._total_funds:
+                continue
             for funds in range(self._total_funds, lot_cost - 1, -1):
                 new_profit = max_profit[funds - lot_cost] + lot_profit
                 if new_profit > max_profit[funds]:
